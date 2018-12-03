@@ -11,7 +11,7 @@ except IndexError:
 print(day)
 os.makedirs(day, exist_ok=True)
 with open('template.py') as f:
-    with open(day / 'template.py', 'w') as outf:
+    with open(day / f'{day.name}.py', 'w') as outf:
         outf.write(f.read())
     with open(day / 'one.txt', 'w'):
         pass

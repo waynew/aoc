@@ -47,5 +47,5 @@ print('***** End Sample ******')
 print()
 print()
 
-part_one(lines)
-part_two(lines)
+#part_one(lines)
+#part_two(lines)
