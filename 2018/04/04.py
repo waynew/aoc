@@ -59,6 +59,7 @@ def shifts(lines):
 
 def part_one(lines):
     print('==== Part one ====')
+    lines.sort()
     sleepy_times = Counter()
     current_guard = None
     asleeps_on = defaultdict(Counter)
@@ -79,7 +80,6 @@ def part_one(lines):
                 asleeps_on[guard_id][(sleep_time+timedelta(minutes=minute)).time()] += 1
     most_common_sleep_time = (None, None, -1)
     for guard_id in sleepy_times:
-        #print('Guard', guard_id, 'slept for', sleepy_times[guard_id])
         guards_most_common_sleep_time = asleeps_on[guard_id].most_common(1)[0]
         if most_common_sleep_time[2] < guards_most_common_sleep_time[1]:
             most_common_sleep_time = (guard_id, *guards_most_common_sleep_time)
@@ -87,6 +87,13 @@ def part_one(lines):
     guard_id = int(most_common_sleep_time[0][1:])
     sleep_minute = most_common_sleep_time[1].minute
     print('Result:', guard_id * sleep_minute)
+
+    most_sleepy_guard = sleepy_times.most_common(1)
+    print('Sleepiest guard:', most_sleepy_guard)
+    guard_id = most_sleepy_guard[0][0]
+    print('Guard ID:', guard_id[0])
+    print('Sleepiest guard most common sleep time:', asleeps_on[guard_id].most_common(1))
+    print('Result:', int(guard_id[1:])*asleeps_on[guard_id].most_common(1)[0][0].minute)
     print('==== End part one ====')
 
 
