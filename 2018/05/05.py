@@ -8,7 +8,7 @@ from itertools import *
 logging.basicConfig(
     filename='debug.txt',
     filemode='w',
-    level=logging.INFO,
+    level=logging.WARN,
 )
 
 logger = logging.getLogger('day05')
@@ -44,7 +44,7 @@ def part_one(lines):
     i = 0
     while i < len(text)-1:
         a,b = text[i:i+2]
-        can_synth = a.lower() == b.lower()
+        can_synth = a.lower() == b.lower() and a != b
         if can_synth:
             logger.info(a+b)
             debug(f'synthing {a} {b}')
@@ -56,21 +56,39 @@ def part_one(lines):
             debug(text[start:end])
             debug(' '*spaces+'^^')
             text = text[:i] + text[i+2:]
+            debug(text[start:end])
             i -= 1
             i = max(0, i)
-            debug(text[start:end])
         else:
             i += 1
     print(len(text))
     print('==== End part one ====')
+    return len(text)
+
+
+def part_two(lines):
+    original_text = text = lines[0]
+    units = set(text)
+    pairs = defaultdict(list)
+    for unit in units:
+        pairs[unit.lower()].append(unit)
+    lengths = []
+    for unit in pairs:
+        text = original_text
+        for thing in pairs[unit]:
+            text = text.replace(thing, '')
+        lengths.append(part_one([text]))
+    print('Min:', min(lengths))
 
 
 print(f'{" Sample ":*^40}')
 part_one(sample_1_lines)
+part_two(sample_1_lines)
 print(f'{" End Sample ":*^40}')
 
 print('\n')
 
 print(f'{" Live ":*^40}')
 part_one(lines)
+part_two(lines)
 print(f'{" Done ":*^40}')
