@@ -113,10 +113,7 @@ def part_two(lines, limit):
             xy = Point(id=None,x=x,y=y)
             total_distance = sum(distance(xy, point) for point in points)
             if total_distance < limit:
-                print(total_distance)
                 grid[y][x] = '✓'
-            else:
-                print(total_distance)
     text = ''.join(''.join(row) for row in grid)
     print('Safe zone:', text.count('✓'))
     debug(grid)
@@ -130,6 +127,6 @@ print(f'{" End Sample ":*^40}')
 print('\n')
 
 print(f'{" Live ":*^40}')
-#part_one(lines)
+part_one(lines)
 part_two(lines, limit=10_000)
 print(f'{" Done ":*^40}')
