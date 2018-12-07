@@ -7,7 +7,7 @@ from itertools import *
 DAY=7
 
 try:
-    from aocd import get_data
+    from aocd import get_data, submit1, submit2
 except:
     def get_data(day=None):
         try:
@@ -26,54 +26,61 @@ Step D must be finished before step E can begin.
 Step F must be finished before step E can begin.
 '''.strip())
 
-sample_2 = io.StringIO('''
-abcde
-fghij
-klmno
-pqrst
-fguij
-axcye
-wvxyz
-'''.strip())
-
 sample_1_lines = [line.strip() for line in sample_1]
-sample_2_lines = [line.strip() for line in sample_2]
 
 
 class Step:
     def __init__(self, id, requirements=None):
         self.id = id
         self.requirements = []
+        self.required_by = []
+
         if requirements is not None:
             self.requirements.extend(requirements)
-    
+
     def __repr__(self):
         return f'Step(id={self.id!r}, requirements={self.requirements!r})'
 
+    def blocked(self):
+        return bool(self.requirements)
 
-Edge = namedtuple('Edge', 'step,needed_by')
+
+Dependency = namedtuple('Dependency', 'step,needed_by')
 
 
-class Graph(list):
-    def __init__(self):
-        super().__init__()
-
-    def ordered(self):
-        ordered = []
-        
+def step_time(char):
+    return ord(char)-ord('A')+60
 
 
 def part_one(lines):
     print('==== Part one ====')
-    graph = Graph()
+    steps = {}
+    blocked_by = defaultdict(list)
+    blocking = defaultdict(list)
+    steps_left = set()
     for line in lines:
         data = line.split()
         step = data[1]
-        needed_by = data[-3]
-        edge = Edge(step=step, needed_by=needed_by)
-        graph.append(edge)
+        required_by = data[-3]
+        steps_left.add(step)
+        steps_left.add(required_by)
+        steps.setdefault(step, Step(step))
+        steps.setdefault(required_by, Step(required_by)).requirements.append(step)
+        steps[step].required_by.append(steps[required_by])
+        blocked_by[step].append(required_by)
+        blocking[required_by].append(step)
 
-    print(graph)
+    ordered = []
+    result = ''
+    while steps_left:
+        next_step = next(iter(sorted(steps_left.difference(blocking))))
+        result += next_step
+        steps_left.remove(next_step)
+        for blocked_step in blocked_by[next_step]:
+            blocking[blocked_step].remove(next_step)
+            if not blocking[blocked_step]:
+                del blocking[blocked_step]
+    return result
     print('==== End part one ====')
 
 
@@ -85,5 +92,6 @@ print('\n')
 
 print(f'{" Live ":*^40}')
 data = get_data(day=DAY)
-part_one(data.split('\n'))
+result = part_one(data.split('\n'))
+#submit1(result)
 print(f'{" Done ":*^40}')
