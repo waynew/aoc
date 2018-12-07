@@ -51,18 +51,29 @@ class Step:
         return f'Step(id={self.id!r}, requirements={self.requirements!r})'
 
 
+Edge = namedtuple('Edge', 'step,needed_by')
+
+
+class Graph(list):
+    def __init__(self):
+        super().__init__()
+
+    def ordered(self):
+        ordered = []
+        
+
+
 def part_one(lines):
     print('==== Part one ====')
-    steps = {}
+    graph = Graph()
     for line in lines:
         data = line.split()
         step = data[1]
-        required_by = data[-3]
-        steps.setdefault(step, Step(step))
-        steps.setdefault(required_by, Step(required_by)).requirements.append(step)
-    print(line)
-    print(step, required_by)
-    print(list(sorted(steps.values(), key=lambda x: (len(x.requirements), x.id))))
+        needed_by = data[-3]
+        edge = Edge(step=step, needed_by=needed_by)
+        graph.append(edge)
+
+    print(graph)
     print('==== End part one ====')
 
 
