@@ -49,10 +49,10 @@ Dependency = namedtuple('Dependency', 'step,needed_by')
 
 
 def step_time(char):
-    return ord(char)-ord('A')+60
+    return ord(char)-ord('A')+1+60
 
 
-def part_one(lines):
+def part_one(lines, max_workers=2):
     print('==== Part one ====')
     steps = {}
     blocked_by = defaultdict(list)
@@ -72,26 +72,46 @@ def part_one(lines):
 
     ordered = []
     result = ''
+    workers = {}
+    time = 0
     while steps_left:
-        next_step = next(iter(sorted(steps_left.difference(blocking))))
-        result += next_step
-        steps_left.remove(next_step)
-        for blocked_step in blocked_by[next_step]:
-            blocking[blocked_step].remove(next_step)
-            if not blocking[blocked_step]:
-                del blocking[blocked_step]
-    return result
+        next_steps = [
+            step for step in sorted(steps_left.difference(blocking))
+            if step not in workers
+        ]
+        if next_steps and len(workers) < max_workers:
+            for i in range(min(len(next_steps), max_workers-len(workers))):
+                #print('Adding worker', next_steps[i], 'iter', time)
+                workers[next_steps[i]] = step_time(next_steps[i])
+
+        for s in list(workers):
+            workers[s] -= 1
+            if workers[s] <= 0:
+                #print('Worker', s, 'done')
+                del workers[s]
+                steps_left.remove(s)
+                result += s
+                for blocked_step in blocked_by[s]:
+                    blocking[blocked_step].remove(s)
+                    if not blocking[blocked_step]:
+                        del blocking[blocked_step]
+        time += 1
+    return time, result
     print('==== End part one ====')
 
 
 print(f'{" Sample ":*^40}')
-part_one(sample_1_lines)
+result = part_one(sample_1_lines)
+print(result)
+for c in result[1]:
+    print(step_time(c))
 print(f'{" End Sample ":*^40}')
 
 print('\n')
 
 print(f'{" Live ":*^40}')
 data = get_data(day=DAY)
-result = part_one(data.split('\n'))
-#submit1(result)
+result = part_one(data.split('\n'), max_workers=5)
+print(result)
+submit2(result[0])
 print(f'{" Done ":*^40}')
