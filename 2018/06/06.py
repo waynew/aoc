@@ -5,6 +5,16 @@ from ast import literal_eval
 from collections import *
 from itertools import *
 
+try:
+    from aocd import get_data
+except:
+    def get_data(day=None):
+        try:
+            with open('input.txt') as real_input:
+                return real_input.read()
+        except FileNotFoundError:
+            print('WARNING: no input.txt found, just running with sample data')
+
 sample_1 = io.StringIO('''
 1, 1
 1, 6
@@ -25,12 +35,6 @@ wvxyz
 '''.strip())
 
 Point = namedtuple('Point', 'id,x,y')
-
-try:
-    with open('input.txt') as real_input:
-        lines = [line.strip() for line in real_input]
-except FileNotFoundError:
-    print('WARNING: no input.txt found, just running samples')
 
 sample_1_lines = [line.strip() for line in sample_1]
 sample_2_lines = [line.strip() for line in sample_2]
@@ -127,6 +131,7 @@ print(f'{" End Sample ":*^40}')
 print('\n')
 
 print(f'{" Live ":*^40}')
+lines = get_data(day=6).split('\n')
 part_one(lines)
 part_two(lines, limit=10_000)
 print(f'{" Done ":*^40}')
