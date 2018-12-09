@@ -7,7 +7,7 @@ from itertools import *
 DAY=0
 
 try:
-    from aocd import get_data
+    from aocd import get_data, submit1, submit2
 except:
     def get_data(day=None):
         try:
@@ -40,19 +40,20 @@ sample_1_lines = [line.strip() for line in sample_1]
 sample_2_lines = [line.strip() for line in sample_2]
 
 
-def part_one(lines):
-    print('==== Part one ====')
+def do_it(lines):
     print(lines)
-    print('==== End part one ====')
 
 
 print(f'{" Sample ":*^40}')
-part_one(sample_1_lines)
+result = do_it(sample_1_lines)
 print(f'{" End Sample ":*^40}')
 
 print('\n')
 
 print(f'{" Live ":*^40}')
 data = get_data(day=DAY)
+#result = do_it(lines)
 #part_one(lines)
+#submit1(result)
+#submit2(result)
 print(f'{" Done ":*^40}')
