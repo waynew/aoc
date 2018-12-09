@@ -34,22 +34,33 @@ sample_1_lines = [line.strip() for line in sample_1]
 sample_2_lines = [line.strip() for line in sample_2]
 
 
-def tree_ify(data):
-    if not data:
-        return 0,0,0,[]
-    data = data[:]
-    child_node_count = data.pop(0)
-    metadata_count = data.pop(0)
-    metadata = data[-metadata_count:]
-    data = data[:-metadata_count]
-    for _ in range(child_node_count):
-        _, sub_meta_count, _, data = tree_ify(data)
-    return child_node_count, metadata_count, metadata, data
+class Node:
+    def __init__(self, data=None, children=None, metadata=None):
+        if children and metadata:
+            self.children = children
+            self.metadata = metadata
+        else:
+            data = data[:]
+            self.child_count = data.pop(0)
+            self.meta_count = data.pop(0)
+            self.leftover_data = data
+            self.children = []
+            self.metadata = []
+            for _ in range(self.child_count):
+                child = Node(data)
+                data = child.leftover_data
+                self.children.append(child)
+
+            for _ in range(self.meta_count):
+                self.metadata.append(data.pop(0))
+
+    def __repr__(self):
+        return f'Node(children={self.children!r}, metadata={self.metadata!r})'
 
 
 def part_one(lines):
     print('==== Part one ====')
-    result = tree_ify([int(x) for x in lines[0].split()])
+    result = Node([int(x) for x in lines[0].split()])
     print('==== End part one ====')
     return result
 
