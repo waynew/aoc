@@ -57,6 +57,7 @@ def do_it(player_count=30, last_marble=5807, debug=False):
             current_rotation += 7
             scores[current_player] += circle.pop()
             current_marble = circle[0]
+            circle.rotate(-1)
         else:
             circle.rotate(-1)
             current_rotation -= 1
@@ -76,8 +77,8 @@ def do_it(player_count=30, last_marble=5807, debug=False):
 
 
 print(f'{" Sample ":*^40}')
-result = do_it(9, 25, debug=False)
-print(result.most_common())
+result = do_it(9, 25, debug=True)
+#print(result.most_common())
 #assert result.most_common(1)[0][1] == 37305, result.most_common(1)[0][1]
 things = (
     (10, 1618, 8317),
@@ -89,24 +90,25 @@ things = (
 
 for player, last_marble, expected_score in things:
     result = do_it(player, last_marble)
-    print(result.most_common())
+    #print(result.most_common())
     score = result.most_common(1)[0][1] 
     assert score == expected_score, f'Score was {score} not {expected_score}'
+    print('Checked', player, last_marble, expected_score)
 print(f'{" End Sample ":*^40}')
 
 print('\n')
 
 print(f'{" Live ":*^40}')
-#data = get_data(day=DAY).split()
-#player_count = int(data[0])
-#last_marble = int(data[-2])
+data = get_data(day=DAY).split()
+player_count = int(data[0])
+last_marble = int(data[-2])
 #result = do_it(player_count, last_marble)
 #print(result.most_common(1))
 #score = result.most_common(1)[0][1]
 #
-#result = do_it(player_count, last_marble*100)
-#print(result.most_common(1))
-#score = result.most_common(1)[0][1]
+result = do_it(player_count, last_marble*100)
+print(result.most_common(1))
+score = result.most_common(1)[0][1]
 #submit1(score)
-#submit2(result)
+submit2(result)
 print(f'{" Done ":*^40}')
