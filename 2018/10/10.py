@@ -110,7 +110,7 @@ def do_it(lines, max_steps=5, grid_x=100, grid_y=20, file=sys.stdout):
     min_diff_y = sys.maxsize
     min_step_x = None
     min_step_y = None
-    for step in range(10000):
+    for step in range(20000):
         for point in points:
             point.step = step
         min_x = min(p.x for p in points)
@@ -135,7 +135,7 @@ def do_it(lines, max_steps=5, grid_x=100, grid_y=20, file=sys.stdout):
 
     coords = set()
     for point in points:
-        coords.add(point.offset_yx)
+        coords.add(point.yx)
 
     grid = [
         [
