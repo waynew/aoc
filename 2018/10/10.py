@@ -2,6 +2,7 @@ import sys
 import time
 import io
 import re
+from PIL import Image, ImageDraw
 from ast import literal_eval
 from collections import *
 from itertools import *
@@ -65,14 +66,14 @@ sample_2_lines = [line.strip() for line in sample_2]
 
 
 class Point:
-    def __init__(self, x, y, dx, dy):
+    def __init__(self, x, y, dx, dy, offset_x=0, offset_y=0, step=0):
         self._x = x
         self._y = y
         self.dx = dx
         self.dy = dy
-        self.offset_x = 0
-        self.offset_y = 0
-        self.step = 0
+        self.offset_x = offset_x
+        self.offset_y = offset_y
+        self.step = step
 
     @property
     def x(self):
@@ -81,6 +82,10 @@ class Point:
     @property
     def y(self):
         return self._y + self.dy * self.step
+
+    @property
+    def xy(self):
+        return (self.x, self.y)
 
     @property
     def yx(self):
@@ -101,16 +106,19 @@ def parse(line):
 
 
 
-def do_it(lines, max_steps=5, grid_x=100, grid_y=20, file=sys.stdout):
+def do_it(lines, max_steps=5, step_size=1, grid_x=100, grid_y=20, file=sys.stdout):
     points = []
     for line in lines:
         points.append(parse(line))
 
-    min_diff_x = sys.maxsize
-    min_diff_y = sys.maxsize
-    min_step_x = None
-    min_step_y = None
-    for step in range(10000):
+    for point in points:
+        point.step = 9990
+
+
+    mindiff_x = sys.maxsize
+    mindiff_y = sys.maxsize
+    super_min_x = sys.maxsize
+    for step in range(0, 15000):
         for point in points:
             point.step = step
         min_x = min(p.x for p in points)
@@ -120,15 +128,36 @@ def do_it(lines, max_steps=5, grid_x=100, grid_y=20, file=sys.stdout):
 
         diff_x = max_x-min_x
         diff_y = max_y-min_y
-        if diff_x < min_diff_x:
-            min_diff_x = diff_x
-            min_step_x = step
 
-        if diff_y < min_diff_y:
-            min_diff_y = diff_y
-            min_step_y = step
+        if diff_x < mindiff_x:
+            mindiff_x = diff_x
+            step_x = step
 
-    print(min_diff_x, min_diff_y, min_step_x, min_step_y)
+        if diff_y < mindiff_y:
+            mindiff_y = diff_y
+            step_y = step
+
+        if min_x < super_min_x:
+            super_min_x = min_x
+            min_xxx = step
+
+    print(step_y, step_x)
+    size = (1000, 1000)
+    print(size)
+    print(min_x, max_x, min_y, max_y)
+    print(super_min_x, min_xxx)
+    for step in range(step_x-10, step_x+10, 1):
+        im = Image.new('1', size)
+        draw = ImageDraw.Draw(im)
+        for point in points:
+            point.step = step
+            #coord = [*point.xy, point.x+1, point.y+1]
+            #draw.ellipse(coord, 1)
+            #print(point.xy)
+            draw.point(point.xy, 1)
+
+        im.save(f'output_{str(step).zfill(5)}.png')
+    return
 
     for point in points:
         point.step = min_step_x
@@ -147,17 +176,11 @@ def do_it(lines, max_steps=5, grid_x=100, grid_y=20, file=sys.stdout):
     print('\n'.join(''.join(row) for row in grid), file=file)
 
 
-print(f'{" Sample ":*^40}')
-result = do_it(sample_1_lines)
-print(f'{" End Sample ":*^40}')
+#result = do_it(sample_1_lines)
 
-print('\n')
-
-print(f'{" Live ":*^40}')
+print('Doing the real thing')
 data = get_data()
-with open('output.txt', 'w') as f:
-    result = do_it(data.split('\n'), max_steps=100, grid_x=1000, grid_y=1000, file=f)
-#part_one(lines)
+result = do_it(data.split('\n'), max_steps=10100)
 #submit1(result)
 #submit2(result)
 print(f'{" Done ":*^40}')
