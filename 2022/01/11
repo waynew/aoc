@@ -1,0 +1,20 @@
+import io
+data = open('input.txt').read()
+
+sample = io.StringIO('''
+1000,
+2000,
+3000,
+
+4000,
+
+5000,
+6000,
+7000,
+8000,
+9000,
+10000,
+''')
+
+for line in sample:
+    print(line, end='')
