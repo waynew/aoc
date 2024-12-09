@@ -12,7 +12,7 @@ def part_one(data):
 
 def part_two(data):
     ...
-    #submit(..., part="b", day=DAY1, year=2024, reopen=False)
+    #submit(..., part="b", day=DAY, year=2024, reopen=False)
 
 
 part_one(data)
