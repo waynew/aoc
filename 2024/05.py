@@ -1,3 +1,4 @@
+import pprint
 from aocd import get_data, submit
 import aocd
 import collections
@@ -53,7 +54,7 @@ def the_order(data, k, seen):
 def split(data):
     order_rules, updates = data.split('\n\n')
     order_rules = sorted(order_rules.split())
-    order_rules = dict(rule.split('|') for rule in order_rules)
+    order_rules = [rule.split('|') for rule in order_rules]
     updates = [update.split(',') for update in updates.split('\n')]
     return order_rules, updates
 
@@ -61,16 +62,42 @@ def split(data):
 def part_one(data):
     befores = collections.defaultdict(set)
     order_rules, updates = split(data)
+    uniques = set()
+    ordered = []
+    something = {}
+    for before, after in order_rules:
+        if after in order_rules:
+            ordered.insert(order_rules.index(after), before)
 
+        if after in something:
+            pass
+        else:
+            something[before] = after
 
-    print(order_rules)
-    print(updates[0])
+        uniques.add(before)
+        uniques.add(after)
+        #print(before, after)
+        befores[after].add(before)
+
+    
+    print(uniques)
+    print(something)
+    pprint.pprint(befores)
+    #print(len(updates),sum(len(u) for u in updates))
+    #print('*'*20)
+    print(min(len(befores[b]) for b in befores))
+    #print(len(befores))
+    #print(len(order_rules))
+    #print(order_rules)
+    #print(updates[0])
+    return
     for update in updates:
         for page in update:
             print(the_order(order_rules, page, set()))
 
         print()
         print('*'*20)
+        break
 
     return 0
     print(updates[:10])
@@ -84,9 +111,10 @@ def part_two(data):
 
 
 sample_answer = part_one(puzzle.examples[0].input_data)
-assert sample_answer == 143, str(sample_answer)
 if not puzzle.answered_a:
     answer_a = part_one(puzzle.input_data)
+exit()
+assert sample_answer == 143, str(sample_answer)
 
 sample_answer = part_two(puzzle.examples[0].input_data)
 assert sample_answer == 'asdf', str(sample_answer)
