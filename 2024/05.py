@@ -39,21 +39,39 @@ data=sample_data = '''\
 
 
 
+def the_order(data, k, seen):
+    print(k)
+    if k in seen:
+        return False
+    seen.add(k)
+    next = data.get(k)
+    if next:
+        the_order(data, next, seen)
+    return True
+
+
+def split(data):
+    order_rules, updates = data.split('\n\n')
+    order_rules = sorted(order_rules.split())
+    order_rules = dict(rule.split('|') for rule in order_rules)
+    updates = [update.split(',') for update in updates.split('\n')]
+    return order_rules, updates
+
+
 def part_one(data):
     befores = collections.defaultdict(set)
-    order_rules, updates = data.split('\n\n')
-    order_rules = sorted(order_rules.split(), key=lambda x: x.split('|')[1])
-    updates = updates.split('\n')
+    order_rules, updates = split(data)
 
 
-    ordered = list(order_rules.pop().split('|'))
-    while order_rules:
-        before, after = order_rules.pop().split('|')
-
-
-    print(order_rules[:10])
+    print(order_rules)
+    print(updates[0])
     for update in updates:
-        pass
+        for page in update:
+            print(the_order(order_rules, page, set()))
+
+        print()
+        print('*'*20)
+
     return 0
     print(updates[:10])
     #print(befores)
