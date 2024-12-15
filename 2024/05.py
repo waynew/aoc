@@ -61,42 +61,64 @@ def split(data):
 
 
 def part_one(data):
-
-    r
-    befores = collections.defaultdict(set)
-    order_rules, updates = split(data)
-    uniques = set()
-    for rule in order_rules:
-        uniques.update(rule)
-        befores[rule[0]].add(rule[1])
-    #pprint.pprint(uniques)
-    asdf = sorted(uniques, key=cmp_to_key(lambda x,y: -1 if x in befores and y in befores[x] else 0))
-    #print(asdf)
-
     total = 0
-    good_updates = []
-    for update in updates:
-        last_i = -1
-        for num in update:
-            if num in asdf:
-                idx = asdf.index(num)
-            else:
-                idx = last_i
-            if idx <= last_i:
-                break
-            last_i = idx
-        else:
-            good_updates.append(update)
-            total += int(update[len(update)//2])
-    #pprint.pprint(good_updates)
-    print(total)
+    order_rules, updates = split(data)
+    priorities = {}
+    smallest = 100
+    for a,b in order_rules:
+        if b not in priorities:
+            priorities[b] = min(smallest, 100)
+        priorities[a] = priorities[b]-1
+        smallest = priorities[a]
+    #pprint.pprint(priorities)
 
+    # What does each page belong after?
+    afters = collections.defaultdict(set)
+    for a,b in order_rules:
+        afters[a].add(b)
+
+    for update in updates:
+        seen = set()
+        for page in update:
+            seen.add(page)
+            after = afters.get(page)
+            if after is None:
+                continue  # page isn't required before anything
+            if any(p in after for p in seen):
+                # We already saw this page, but we should not have!
+                break
+        else:
+            # Never broke, never saw invalid page
+            mid = len(update)//2
+            val = int(update[mid])
+            total += val
 
     return total
 
+
+class Foo:
+    def __init__(self, val, next):
+        self.val = val
+        self.before = {next}
+
+
 def part_two(data):
-    ...
-    #submit(..., part="b", day=DAY, year=2024, reopen=False)
+    total = 0
+    order_rules, updates = split(data)
+
+    orders = collections.defaultdict(lambda: collections.defaultdict(set))
+
+    while order_rules:
+        before, after = order_rules.pop(0)
+        orders[before]['before'].add(after)
+        orders[after]['after'].add(before)
+
+
+    #pprint.pprint(orders)
+    for r in order_rules:
+        if not order_rules[r]['after']:
+            print(r)
+    return total
 
 
 sample_answer = part_one(puzzle.examples[0].input_data)
@@ -104,9 +126,10 @@ if not puzzle.answered_a:
     answer_a = part_one(puzzle.input_data)
     print(answer_a)
     assert sample_answer == 143, str(sample_answer)
-    #puzzle.answer_a = answer_a
+    puzzle.answer_a = answer_a
 
 sample_answer = part_two(puzzle.examples[0].input_data)
-assert sample_answer == 'asdf', str(sample_answer)
 if not puzzle.answered_b:
     answer_b = part_two(puzzle.input_data)
+    assert sample_answer == 'asdf', str(sample_answer)
+    puzzle.answer_b = answer_b
