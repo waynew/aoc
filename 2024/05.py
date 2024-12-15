@@ -54,7 +54,7 @@ def the_order(data, k, seen):
 
 def split(data):
     order_rules, updates = data.split('\n\n')
-    order_rules = sorted(order_rules.split())
+    order_rules = order_rules.split()
     order_rules = [rule.split('|') for rule in order_rules]
     updates = [update.split(',') for update in updates.split('\n')]
     return order_rules, updates
@@ -77,7 +77,7 @@ def part_one(data):
     for a,b in order_rules:
         afters[a].add(b)
 
-    pprint.pprint(afters)
+    #pprint.pprint(afters)
     for update in updates:
         seen = set()
         for page in update:
@@ -116,41 +116,51 @@ class Foo:
         return str(self)
 
 
+
 def part_two(data):
     total = 0
     order_rules, updates = split(data)
 
-    fnord = collections.defaultdict(set)
+    ranks = {}
+    spanks = collections.Counter()
     for rule in order_rules:
-        fnord[rule[0]].add(rule[1])
-        fnord[rule[1]]
+        ranks[rule[0]] = 0
+        ranks[rule[1]] = ranks.get(rule[1], 0) + 1
+        spanks[rule[1]] += 1
 
-    ordered = list(fnord)
-    disordered = True
-        
-    for val in list(ordered):
-        afters = fnord.get(val)
-        if afters:
-            first = min(ordered.index(i) for i in afters)
+
+    pprint.pprint(spanks); exit()
+
+    total_ordered = 0
+    for update in updates:
+        ordered = sorted(update, key=lambda x: ranks[x])
+        if update != ordered:
+            #print('  ', update, '\n=>', ordered)
+            #print('   ', '      '*mid, '^^')
+            mid = len(ordered)//2
+            val = int(ordered[mid])
+            total += val
         else:
-            first = len(ordered)
-        print(val, first)
-    
-    pprint.pprint(ordered)
-    exit()
+            mid = len(ordered)//2
+            val = int(update[mid])
+            total_ordered += val
 
+    print(total_ordered)
     return total
 
 
 sample_answer = part_one(puzzle.examples[0].input_data)
+print('Sample A', sample_answer)
+answer_a = part_one(puzzle.input_data)
+print(answer_a)
 if not puzzle.answered_a:
-    answer_a = part_one(puzzle.input_data)
-    print(answer_a)
     assert sample_answer == 143, str(sample_answer)
     puzzle.answer_a = answer_a
 
 sample_answer = part_two(puzzle.examples[0].input_data)
+print('Sample B', sample_answer)
 if not puzzle.answered_b:
     answer_b = part_two(puzzle.input_data)
-    assert sample_answer == 'asdf', str(sample_answer)
-    puzzle.answer_b = answer_b
+    print(answer_b)
+    assert sample_answer == 123, str(sample_answer)
+    #puzzle.answer_b = answer_b
