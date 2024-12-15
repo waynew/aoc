@@ -1,4 +1,5 @@
 import pprint
+from functools import cmp_to_key
 from aocd import get_data, submit
 import aocd
 import collections
@@ -60,50 +61,38 @@ def split(data):
 
 
 def part_one(data):
+
+    r
     befores = collections.defaultdict(set)
     order_rules, updates = split(data)
     uniques = set()
-    ordered = []
-    something = {}
-    for before, after in order_rules:
-        if after in order_rules:
-            ordered.insert(order_rules.index(after), before)
+    for rule in order_rules:
+        uniques.update(rule)
+        befores[rule[0]].add(rule[1])
+    #pprint.pprint(uniques)
+    asdf = sorted(uniques, key=cmp_to_key(lambda x,y: -1 if x in befores and y in befores[x] else 0))
+    #print(asdf)
 
-        if after in something:
-            pass
-        else:
-            something[before] = after
-
-        uniques.add(before)
-        uniques.add(after)
-        #print(before, after)
-        befores[after].add(before)
-
-    
-    print(uniques)
-    print(something)
-    pprint.pprint(befores)
-    #print(len(updates),sum(len(u) for u in updates))
-    #print('*'*20)
-    print(min(len(befores[b]) for b in befores))
-    #print(len(befores))
-    #print(len(order_rules))
-    #print(order_rules)
-    #print(updates[0])
-    return
+    total = 0
+    good_updates = []
     for update in updates:
-        for page in update:
-            print(the_order(order_rules, page, set()))
+        last_i = -1
+        for num in update:
+            if num in asdf:
+                idx = asdf.index(num)
+            else:
+                idx = last_i
+            if idx <= last_i:
+                break
+            last_i = idx
+        else:
+            good_updates.append(update)
+            total += int(update[len(update)//2])
+    #pprint.pprint(good_updates)
+    print(total)
 
-        print()
-        print('*'*20)
-        break
 
-    return 0
-    print(updates[:10])
-    #print(befores)
-    #print(data)
-    #submit(..., part="a", day=DAY, year=2024, reopen=False)
+    return total
 
 def part_two(data):
     ...
@@ -113,8 +102,9 @@ def part_two(data):
 sample_answer = part_one(puzzle.examples[0].input_data)
 if not puzzle.answered_a:
     answer_a = part_one(puzzle.input_data)
-exit()
-assert sample_answer == 143, str(sample_answer)
+    print(answer_a)
+    assert sample_answer == 143, str(sample_answer)
+    #puzzle.answer_a = answer_a
 
 sample_answer = part_two(puzzle.examples[0].input_data)
 assert sample_answer == 'asdf', str(sample_answer)
