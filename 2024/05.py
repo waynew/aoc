@@ -116,42 +116,28 @@ class Foo:
         return str(self)
 
 
-def blerp(rules, first=None, ordered=None, afters=None):
-    ordered = ordered or []
-    afters = afters or {}
-    if not rules:
-        return ordered
-    
-    before, after = rules.pop()
-    after_idx = -1
-    max = 9999
-    if after in ordered:
-        after_idx = ordered.index(after)
-    
-
-    
-    print(ordered)
-    return blerp(rules, ordered=ordered)
-
-
 def part_two(data):
     total = 0
     order_rules, updates = split(data)
 
-    orders = collections.defaultdict(lambda: collections.defaultdict(set))
+    fnord = collections.defaultdict(set)
+    for rule in order_rules:
+        fnord[rule[0]].add(rule[1])
+        fnord[rule[1]]
 
-    fnord = {}
-
-    ordered = blerp(order_rules)
-
+    ordered = list(fnord)
+    disordered = True
+        
+    for val in list(ordered):
+        afters = fnord.get(val)
+        if afters:
+            first = min(ordered.index(i) for i in afters)
+        else:
+            first = len(ordered)
+        print(val, first)
+    
     pprint.pprint(ordered)
     exit()
-
-
-    #pprint.pprint(orders)
-    for r in order_rules:
-        if not order_rules[r]['after']:
-            print(r)
 
     return total
 
