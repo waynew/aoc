@@ -77,6 +77,7 @@ def part_one(data):
     for a,b in order_rules:
         afters[a].add(b)
 
+    pprint.pprint(afters)
     for update in updates:
         seen = set()
         for page in update:
@@ -97,9 +98,40 @@ def part_one(data):
 
 
 class Foo:
-    def __init__(self, val, next):
+    foos = {}
+    @classmethod
+    def get(cls, val):
+        return Foo.foos.setdefault(val, Foo(val))
+
+    def __init__(self, val, next=None):
         self.val = val
-        self.before = {next}
+        self.before = set()
+        if next: 
+            self.before.add(Foo.get(next))
+
+    def __str__(self):
+        return f"{self.val}\n\t->{self.before}"
+
+    def __repr__(self):
+        return str(self)
+
+
+def blerp(rules, first=None, ordered=None, afters=None):
+    ordered = ordered or []
+    afters = afters or {}
+    if not rules:
+        return ordered
+    
+    before, after = rules.pop()
+    after_idx = -1
+    max = 9999
+    if after in ordered:
+        after_idx = ordered.index(after)
+    
+
+    
+    print(ordered)
+    return blerp(rules, ordered=ordered)
 
 
 def part_two(data):
@@ -108,16 +140,19 @@ def part_two(data):
 
     orders = collections.defaultdict(lambda: collections.defaultdict(set))
 
-    while order_rules:
-        before, after = order_rules.pop(0)
-        orders[before]['before'].add(after)
-        orders[after]['after'].add(before)
+    fnord = {}
+
+    ordered = blerp(order_rules)
+
+    pprint.pprint(ordered)
+    exit()
 
 
     #pprint.pprint(orders)
     for r in order_rules:
         if not order_rules[r]['after']:
             print(r)
+
     return total
 
 
