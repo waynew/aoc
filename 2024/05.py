@@ -123,17 +123,15 @@ def part_two(data):
 
     ranks = {}
     spanks = collections.Counter()
+    sorters = collections.defaultdict(set)
     for rule in order_rules:
         ranks[rule[0]] = 0
         ranks[rule[1]] = ranks.get(rule[1], 0) + 1
-        spanks[rule[1]] += 1
+        sorters[rule[0]].add(rule[1])
 
-
-    pprint.pprint(spanks); exit()
 
     total_ordered = 0
     for update in updates:
-        ordered = sorted(update, key=lambda x: ranks[x])
         if update != ordered:
             #print('  ', update, '\n=>', ordered)
             #print('   ', '      '*mid, '^^')
