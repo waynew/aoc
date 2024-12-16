@@ -116,6 +116,25 @@ class Foo:
         return str(self)
 
 
+class Blerp:
+    def __init__(self, val, afters=None):
+        self.afters = set()
+        if afters:
+            self.afters.update(afters)
+        self.val = val
+
+    def __repr__(self):
+        return f"Blerp({self.val!r}, {self.afters!r})"
+
+    def __eq__(self, other):
+        return self.val == other.val
+
+    def __lt__(self, other):
+        return other.val in self.afters
+
+    def __hash__(self):
+        return hash(self.val)
+
 
 def part_two(data):
     total = 0
@@ -124,14 +143,21 @@ def part_two(data):
     ranks = {}
     spanks = collections.Counter()
     sorters = collections.defaultdict(set)
+    borp = {}
     for rule in order_rules:
         ranks[rule[0]] = 0
         ranks[rule[1]] = ranks.get(rule[1], 0) + 1
         sorters[rule[0]].add(rule[1])
+        blerp = borp.setdefault(rule[0], Blerp(rule[0], {rule[1]}))
+        borp.setdefault(rule[1], Blerp(rule[1]))
+        blerp.afters.add(rule[1])
 
+    vals = sorted(borp, key=lambda x: borp[x])
+    #print(vals)
 
     total_ordered = 0
     for update in updates:
+        ordered = sorted(update, key=lambda x: borp[x])
         if update != ordered:
             #print('  ', update, '\n=>', ordered)
             #print('   ', '      '*mid, '^^')
@@ -161,4 +187,4 @@ if not puzzle.answered_b:
     answer_b = part_two(puzzle.input_data)
     print(answer_b)
     assert sample_answer == 123, str(sample_answer)
-    #puzzle.answer_b = answer_b
+    puzzle.answer_b = answer_b
